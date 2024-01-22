@@ -1,12 +1,10 @@
 
-type onMenuToggle = () => void;
-
 
 export interface TopHeaderProps {
-    onMenuToggle: onMenuToggle;
+    onMenuToggle: () => void,
+    isMobile: boolean
 }
 
-export interface SideMenuProps {
-    isMenuOpen: boolean,
-    onMenuToggle: onMenuToggle
+export interface SideMenuProps extends TopHeaderProps {
+    isMenuOpen: boolean
 }

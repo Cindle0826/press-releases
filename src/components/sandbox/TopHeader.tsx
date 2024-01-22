@@ -15,7 +15,7 @@ const items = [
   { id: 2, name: "logout", active: true }
 ]
 
-const TopHeader: React.FC<TopHeaderProps> = ({ onMenuToggle }) => {
+const TopHeader: React.FC<TopHeaderProps> = ({ onMenuToggle, isMobile }) => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   const handlePopoverOpen = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -24,8 +24,8 @@ const TopHeader: React.FC<TopHeaderProps> = ({ onMenuToggle }) => {
   };
 
   const handlePopoverClose = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
-      console.log(456);
-      setAnchorEl(null);
+    console.log(456);
+    setAnchorEl(null);
   };
 
   const open = Boolean(anchorEl);
@@ -41,10 +41,13 @@ const TopHeader: React.FC<TopHeaderProps> = ({ onMenuToggle }) => {
           // 陰影 
           boxShadow: 'none',
           // border 底部線條
-          borderBottom: '2px solid #ddd'
+          // borderBottom: '2px solid #ddd'
         }}
       >
-        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
+        {/* justifyContent 控制 導航欄對齊的方式 space-between 左右均勻，對齊中間不留間距*/}
+        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', color: 'gray' }}>
+          {/* 漢堡按鈕 */}
+          {isMobile ? <IconButton><MenuIcon sx={{ fontSize: '2rem' }} /></IconButton> : <h3 >Publishing news website</h3>}
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -52,7 +55,6 @@ const TopHeader: React.FC<TopHeaderProps> = ({ onMenuToggle }) => {
             onClick={onMenuToggle}
             sx={{ marginRight: 2, }}
           >
-            <MenuIcon sx={{ fontSize: '2rem', color: "gray" }} />
           </IconButton>
           <Box
             sx={{
@@ -65,7 +67,7 @@ const TopHeader: React.FC<TopHeaderProps> = ({ onMenuToggle }) => {
             <span style={{ marginRight: '8px', fontSize: '2rem' }}>Welcome admin!</span>
             <IconButton
               onClick={handlePopoverOpen}
-              // onMouseLeave={handlePopoverClose}
+            // onMouseLeave={handlePopoverClose}
             >
               <Avatar sx={{ backgroundColor: 'pink' }} >
                 <ManageAccountsIcon />
@@ -74,7 +76,6 @@ const TopHeader: React.FC<TopHeaderProps> = ({ onMenuToggle }) => {
             {/* Popover 彈跳框 */}
             <Popover
               // sx={{ pointerEvents: 'none' }}
-              sx={{ width : "100%"}}
               open={open}
               anchorEl={anchorEl}
               onClose={handlePopoverClose}
@@ -88,21 +89,8 @@ const TopHeader: React.FC<TopHeaderProps> = ({ onMenuToggle }) => {
               }}
               disableRestoreFocus
             >
-              {
-                items.map(e => {
-                  return <MenuItem
-                    key={e.id}
-                    sx={{ color: e.active ? 'red' : '' }}
-                    onClick={(event) => {
-                      // 新增點選時的處理程序
-                      console.log(`Clicked on ${e.name}`);
-                      handlePopoverClose(event);
-                    }}
-                  >
-                    {e.name}
-                  </MenuItem>
-                })
-              }
+              <MenuItem onClick={e => handlePopoverClose(e)}>login</MenuItem>
+              <MenuItem onClick={e => handlePopoverClose(e)} sx={{ color: 'red' }}>logout</MenuItem>
             </Popover>
           </Box>
         </Toolbar>

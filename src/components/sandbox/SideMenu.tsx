@@ -11,15 +11,20 @@ import ChevronRight from '@mui/icons-material/ChevronRight';
 import ExpandMore from '@mui/icons-material/ExpandMore'
 import { StarBorder } from '@mui/icons-material';
 import { useState } from 'react'
-import useMediaQuery from '@mui/material/useMediaQuery'
+import Paper from '@mui/material/Paper/Paper'
 
-const SideMenu: React.FC<SideMenuProps> = ({isMenuOpen, onMenuToggle}) => {
+const items = [
+  { id: 1, name: 'send mail' },
+  { id: 2, name: 'hello weather' }
+];
+
+const SideMenu: React.FC<SideMenuProps> = ({ isMenuOpen, onMenuToggle, isMobile }) => {
+  const [selectedItem, setSelectedItem] = useState<number | null>(null);
   const [open, setOpen] = useState(false);
-  const isMobile = useMediaQuery('(max-Width: 800px)');
 
   return (
     <Drawer
-      // temporary 漢堡按鈕 
+      // temporary 隱藏 menu permanent 顯示 menu
       variant={isMobile ? 'temporary' : 'permanent'}
       sx={{
         width: 240,
@@ -29,37 +34,74 @@ const SideMenu: React.FC<SideMenuProps> = ({isMenuOpen, onMenuToggle}) => {
           width: isMobile ? '70%' : 240,
           boxSizing: 'border-box',
           backgroundColor: 'white',
-          marginTop: '80px'
+          marginTop: '80px',
+          border: 'none',
+          padding: '2px'
         }
       }}
       open={isMenuOpen}
       onClose={onMenuToggle}
       ModalProps={{ keepMounted: true }}
     >
-      <Box sx={{ overflow: 'auto' }}>
-        <List
-          sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
-          component="nav"
-          aria-labelledby="nested-list-subheader"
-          subheader={
-            <ListSubheader component="div" id="nested-list-subheader" />
-          }
-        >
-          <ListItemButton onClick={() => setOpen(!open)}>
-            <ListItemText primary="send mail" />
-            {open ? <ExpandMore /> : <ChevronRight />}
-          </ListItemButton>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <List component="div" disablePadding>
-              <ListItemButton sx={{ pl: 4 }}>
-                <ListItemIcon>
-                  <StarBorder />
-                </ListItemIcon>
-                <ListItemText primary="Starred" />
-              </ListItemButton>
-            </List>
-          </Collapse>
-        </List>
+      <Box
+        sx={{
+          overflow: 'auto',
+          backgroundColor: 'white',
+          borderRadius: '8px',
+          border: 'none',
+        }}
+      >
+        <Paper sx={{ zIndex: 1 }}>
+          <List
+            sx={{
+              width: '100%',
+              maxWidth: 360,
+              bgcolor: 'background.paper'
+
+            }}
+            component="nav"
+            aria-labelledby="nested-list-subheader"
+            subheader={
+              <ListSubheader component="div" id="nested-list-subheader" />
+            }
+          >
+            {
+              items.map(e => (
+                <ListItemButton
+                  key={e.id}
+                  sx={{
+                    borderRadius: '8px',
+                    '&:hover': {
+                      color: 'rgb(94, 53, 177)',
+                      backgroundColor: 'rgb(237, 231, 246)',
+                    },
+                    color: selectedItem === e.id ? 'rgb(94, 53, 177)' : 'inherit',
+                    backgroundColor: selectedItem === e.id ? 'rgba(94, 53, 177, 0.3)' : 'inherit',
+                  }}
+
+                  onClick={() => {
+                    setOpen(!open)
+                    setSelectedItem(e.id)
+                  }}
+                >
+                  <ListItemText primary={e.name} />
+                  {open ? <ExpandMore /> : <ChevronRight />}
+                </ListItemButton>
+              ))
+            }
+
+            <Collapse in={open} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
+                <ListItemButton sx={{ pl: 4 }}>
+                  <ListItemIcon>
+                    <StarBorder />
+                  </ListItemIcon>
+                  <ListItemText primary="Starred" />
+                </ListItemButton>
+              </List>
+            </Collapse>
+          </List>
+        </Paper>
       </Box>
     </Drawer>
   )
