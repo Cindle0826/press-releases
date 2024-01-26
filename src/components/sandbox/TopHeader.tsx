@@ -10,11 +10,6 @@ import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import Popover from '@mui/material/Popover';
 import MenuItem from '@mui/material/MenuItem';
 
-const items = [
-  { id: 1, name: "login", active: false },
-  { id: 2, name: "logout", active: true }
-]
-
 const TopHeader: React.FC<TopHeaderProps> = ({ onMenuToggle, isMobile }) => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 

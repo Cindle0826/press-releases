@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { SideMenuProps } from '../../router/view/interfaces'
 import Drawer from '@mui/material/Drawer'
 import Box from '@mui/material/Box'
@@ -10,17 +11,20 @@ import List from '@mui/material/List'
 import ChevronRight from '@mui/icons-material/ChevronRight';
 import ExpandMore from '@mui/icons-material/ExpandMore'
 import { StarBorder } from '@mui/icons-material';
-import { useState } from 'react'
 import Paper from '@mui/material/Paper/Paper'
 
 const items = [
-  { id: 1, name: 'send mail' },
-  { id: 2, name: 'hello weather' }
+  { id: 1, name: 'send mail', children : [{id : 1, name : 'Yun'}, {id : 2, name : 'Laplus'}], open : false  },
+  { id: 2, name: 'hello weather', children : [{id : 1, name : 'Fr'}], open : false }
 ];
 
 const SideMenu: React.FC<SideMenuProps> = ({ isMenuOpen, onMenuToggle, isMobile }) => {
   const [selectedItem, setSelectedItem] = useState<number | null>(null);
-  const [open, setOpen] = useState(false);
+  const [data, setData] = useState<typeof items>(items);
+
+  const handleChangeData = (dataId : number) => {
+    setData(data.map(e => e.id === dataId ? {...e, open : !e.open} : {...e}));
+  }
 
   return (
     <Drawer
@@ -66,9 +70,9 @@ const SideMenu: React.FC<SideMenuProps> = ({ isMenuOpen, onMenuToggle, isMobile 
             }
           >
             {
-              items.map(e => (
+              data.map(e => (
+                <div key={e.id}>
                 <ListItemButton
-                  key={e.id}
                   sx={{
                     borderRadius: '8px',
                     '&:hover': {
@@ -80,26 +84,31 @@ const SideMenu: React.FC<SideMenuProps> = ({ isMenuOpen, onMenuToggle, isMobile 
                   }}
 
                   onClick={() => {
-                    setOpen(!open)
                     setSelectedItem(e.id)
+                    handleChangeData(e.id);
                   }}
                 >
                   <ListItemText primary={e.name} />
-                  {open ? <ExpandMore /> : <ChevronRight />}
+                  {e.open ? <ExpandMore /> : <ChevronRight />}
                 </ListItemButton>
+
+                {e.children.map(child => (
+                  <Collapse key={child.id} in={e.open} timeout="auto" unmountOnExit sx={{ height : 'auto'}}>
+                    <List component="div" disablePadding>
+                      <ListItemButton sx={{ pl: 4 }}>
+                        <ListItemIcon>
+                          <StarBorder />
+                        </ListItemIcon>
+                        <ListItemText primary={child.name} />
+                      </ListItemButton>
+                    </List>
+                  </Collapse>
+                ))}
+              </div>
               ))
             }
 
-            <Collapse in={open} timeout="auto" unmountOnExit>
-              <List component="div" disablePadding>
-                <ListItemButton sx={{ pl: 4 }}>
-                  <ListItemIcon>
-                    <StarBorder />
-                  </ListItemIcon>
-                  <ListItemText primary="Starred" />
-                </ListItemButton>
-              </List>
-            </Collapse>
+            
           </List>
         </Paper>
       </Box>
