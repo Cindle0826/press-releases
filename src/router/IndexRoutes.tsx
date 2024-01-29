@@ -3,6 +3,7 @@ import { useRoutes } from 'react-router-dom'
 import Redirect from './Redirect'
 import { Auth } from './view/types'
 import NoPermission from './view/sandbox/nopermission/NoPermission'
+import NewsSandBox from './view/sandbox/NewsSandBox'
 
 const IndexRoutes = () => {
 
@@ -16,7 +17,8 @@ const IndexRoutes = () => {
         },
         {
             path: "/newsSandBox",
-            element: <AuthComponent children={lazyLoad("sandbox/NewsSandBox")} toPath='login' />,
+            // 特別注意 登入驗證時如果 children 加入懶加載 會導致 每一次切換路由都要重新加載 newSandBox
+            element: <AuthComponent children={<NewsSandBox />} toPath='login' />,
             children : [
                 {
                     path : "home",
