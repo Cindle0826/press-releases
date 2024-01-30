@@ -4,14 +4,13 @@ export interface TopHeaderProps {
 }
 
 export interface SideMenuProps extends TopHeaderProps {
-    isMenuOpen: boolean,
-    handleNavigate: (to: string) => void
+    isMenuOpen: boolean
 }
 
 export interface Item {
     id: number;
-    url: string;
     name: string;
+    url?: string;
     open?: boolean;
     icon?: JSX.Element;
     children?: Item[];

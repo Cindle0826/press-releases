@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Item, SideMenuProps } from '../../router/view/interfaces'
+import { useNavigate } from 'react-router-dom'
 import Drawer from '@mui/material/Drawer'
 import Box from '@mui/material/Box'
 import Collapse from '@mui/material/Collapse'
@@ -13,7 +14,10 @@ import ExpandMore from '@mui/icons-material/ExpandMore'
 import Paper from '@mui/material/Paper/Paper'
 import HomeIcon from '@mui/icons-material/Home';
 import GroupsIcon from '@mui/icons-material/Groups';
-import PeopleOutlineIcon from '@mui/icons-material/PeopleOutline';
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
 
 const items: Item[] = [
   {
@@ -26,25 +30,48 @@ const items: Item[] = [
   {
     id: 2,
     icon: <GroupsIcon />,
-    url: 'user-manage',
-    name: 'User Management',
+    name: 'User Manage',
     open: false,
     children : [
-      { id: 1, name: 'User List', url: 'user-manage/list', icon: <PeopleOutlineIcon />}
+      { 
+        id: 1,
+        name: 'User List',
+        url: 'user-manage/list',
+        icon: <PeopleAltIcon />
+      }
+    ]
+  },
+  {
+    id: 3,
+    icon: <ManageAccountsIcon />,
+    name: 'User Rights Manage',
+    open: false,
+    children : [
+      {
+        id: 1,
+        name: 'Role List',
+        url: 'right-manage/role/list',
+        icon: <PersonAddIcon />
+      },
+      {
+        id: 2,
+        name: 'Right List',
+        url: 'right-manage/right/list',
+        icon: <SettingsSuggestIcon />
+      }
     ]
   }
 ]
 
 
 
-const SideMenu: React.FC<SideMenuProps> = ({ isMenuOpen, onMenuToggle, isMobile, handleNavigate }) => {
+const SideMenu: React.FC<SideMenuProps> = ({ isMenuOpen, onMenuToggle, isMobile }) => {
   const [selectedItem, setSelectedItem] = useState<number | null>(1);
   const [data, setData] = useState<Item[]>(items);
+  const navigate = useNavigate();
 
-  const handleChangeData = (dataId : number, url: string) => {
+  const handleChangeOpen = (dataId : number) => {
     setData(data.map(e => e.id === dataId ? {...e, open : !e.open} : {...e}));
-    // navigate(`/newsSandBox/${url}`, { replace: true })
-    handleNavigate(`/newsSandBox/${url}`)
   }
 
   return (
@@ -105,8 +132,9 @@ const SideMenu: React.FC<SideMenuProps> = ({ isMenuOpen, onMenuToggle, isMobile,
                   }}
 
                   onClick={() => {
-                    setSelectedItem(e.id)
-                    handleChangeData(e.id, e.url);
+                    setSelectedItem(e.id);
+                    handleChangeOpen(e.id);
+                    e.url && navigate(e.url);
                   }}
                 >
                   <ListItemIcon>
@@ -118,9 +146,33 @@ const SideMenu: React.FC<SideMenuProps> = ({ isMenuOpen, onMenuToggle, isMobile,
                 </ListItemButton>
 
                 {e.children && e.children.length > 0 && e.children.map(child => (
-                  <Collapse key={child.id} in={e.open} timeout="auto" unmountOnExit sx={{ height : 'auto'}}>
-                    <List component="div" disablePadding>
-                      <ListItemButton sx={{ pl: 4 }}>
+                  <Collapse 
+                    key={child.id}
+                    in={e.open} 
+                    timeout={{ enter: 500, exit: 300}} 
+                    unmountOnExit 
+                    sx={{ height : 'auto' }}
+                  >
+                    <List 
+                      component="div"
+                      disablePadding
+                      sx={{
+                        marginTop: '8px',
+                        transition: 'margin-top 2s'
+                      }}
+                      onClick={() => {
+                        setSelectedItem(e.id);
+                        child.url && navigate(child.url)
+                      }}
+                    >
+                      <ListItemButton 
+                        sx={{ 
+                          pl: 4,
+                          '&:hover' : {backgroundColor : '#c2cee7'},
+                          borderRadius: '8px'
+                        }} // 設置觸碰時背景為 透明
+                        // disableRipple // 禁用波紋效果 
+                      >
                         <ListItemIcon>
                           {child.icon}
                         </ListItemIcon>
