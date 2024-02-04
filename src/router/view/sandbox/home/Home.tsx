@@ -1,20 +1,58 @@
-import { Grid, Paper, styled } from '@mui/material'
-import React from 'react'
+import { Button } from '@mui/material';
+import axios from 'axios'
 
 const Home = () => {
 
-  const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-  }));
+  /*
+    json-server 
+    關聯 
+    posts?_embed=comments
+    comments?_embed=post
+  */
+  const handleData = () => {
+    axios.get('http://localhost:8000/posts?_embed=comments').then(e => console.log(e.data));
+  }
+
+  const handleInserData = () => {
+    axios.post('http://localhost:8000/posts', {
+      title : 'test',
+      views : 'ok~'
+    }).then(e => {
+      alert("新增成功")
+    })
+    
+  }
+  
+  const handleUpdateData = () => {
+    // patch 局部修改 
+    axios.patch('http://localhost:8000/posts/9c64', {
+      title : '123 ~'
+    }).then(e => {
+      alert("修改成功")
+    })
+  }
+  
+  const handleDeleteData = () => {
+    axios.delete('http://localhost:8000/posts/1').then(e => {
+      alert("刪除成功")
+    }).catch(console.log)
+  }
 
   return (
-    <Grid container spacing={2}>
-      go home
-    </Grid>
+    <>
+      <div style={{ margin : '10px'}}>
+        <Button variant="contained" onClick={handleData}>獲取資料</Button>
+      </div>
+      <div style={{ margin : '10px'}}>
+        <Button variant="contained" onClick={handleInserData}>新增資料</Button>
+      </div>
+      <div style={{ margin : '10px'}}>
+        <Button variant="contained" onClick={handleUpdateData}>修改資料</Button>
+      </div>
+      <div style={{ margin : '10px'}}>
+        <Button variant="contained" onClick={handleDeleteData}>刪除資料</Button>
+      </div>
+    </>
   )
 }
 

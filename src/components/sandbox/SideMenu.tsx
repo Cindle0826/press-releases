@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import axios, { AxiosResponse } from 'axios'
 import { Item, SideMenuProps } from '../../router/view/interfaces'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import Drawer from '@mui/material/Drawer'
 import Box from '@mui/material/Box'
 import Collapse from '@mui/material/Collapse'
@@ -12,66 +13,70 @@ import List from '@mui/material/List'
 import ChevronRight from '@mui/icons-material/ChevronRight';
 import ExpandMore from '@mui/icons-material/ExpandMore'
 import Paper from '@mui/material/Paper/Paper'
-import HomeIcon from '@mui/icons-material/Home';
-import GroupsIcon from '@mui/icons-material/Groups';
-import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
-import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
+import LoadIcon from '../../router/util/LoadIcon'
 
-const items: Item[] = [
-  {
-    id: 1,
-    icon: <HomeIcon /> ,
-    url : 'home',
-    name : 'Home',
-    open: false
-  },
-  {
-    id: 2,
-    icon: <GroupsIcon />,
-    name: 'User Manage',
-    open: false,
-    children : [
-      { 
-        id: 1,
-        name: 'User List',
-        url: 'user-manage/list',
-        icon: <PeopleAltIcon />
-      }
-    ]
-  },
-  {
-    id: 3,
-    icon: <ManageAccountsIcon />,
-    name: 'User Rights Manage',
-    open: false,
-    children : [
-      {
-        id: 1,
-        name: 'Role List',
-        url: 'right-manage/role/list',
-        icon: <PersonAddIcon />
-      },
-      {
-        id: 2,
-        name: 'Right List',
-        url: 'right-manage/right/list',
-        icon: <SettingsSuggestIcon />
-      }
-    ]
-  }
-]
-
-
+// const items = [
+//   {
+//     id: 1,
+//     icon: <HomeIcon /> ,
+//     url : 'home',
+//     name : 'Home',
+//     open: false
+//   },
+//   {
+//     id: 2,
+//     icon: <GroupsIcon />,
+//     name: 'User Manage',
+//     open: false,
+//     children : [
+//       { 
+//         id: 1,
+//         name: 'User List',
+//         url: 'user-manage/list',
+//         icon: <PeopleAltIcon />
+//       }
+//     ]
+//   },
+//   {
+//     id: 3,
+//     icon: <ManageAccountsIcon />,
+//     name: 'User Rights Manage',
+//     open: false,
+//     children : [
+//       {
+//         id: 1,
+//         name: 'Role List',
+//         url: 'right-manage/role/list',
+//         icon: <PersonAddIcon />
+//       },
+//       {
+//         id: 2,
+//         name: 'Right List',
+//         url: 'right-manage/right/list',
+//         icon: <SettingsSuggestIcon />
+//       }
+//     ]
+//   }
+// ]
 
 const SideMenu: React.FC<SideMenuProps> = ({ isMenuOpen, onMenuToggle, isMobile }) => {
-  const [selectedItem, setSelectedItem] = useState<number | null>(1);
-  const [data, setData] = useState<Item[]>(items);
+  const [sideMenu, setSideMenu] = useState<Item[]>();
   const navigate = useNavigate();
+  const location = useLocation().pathname.split("/")[2];
+  console.log(useLocation().pathname);
+  console.log(location);
+  
 
-  const handleChangeOpen = (dataId : number) => {
-    setData(data.map(e => e.id === dataId ? {...e, open : !e.open} : {...e}));
+  useEffect(() => {
+    axios.get('http://localhost:8000/sideMenus?_embed=childrens').then((res: AxiosResponse<Item[]>) => {
+      setSideMenu(res.data);
+      console.log(res.data);
+    })
+  }, [])
+
+  const handleChangeOpen = (menuId : number) => {
+    setSideMenu(prevMenu => prevMenu?.map(e => e.id === menuId ? {...e, open : !e.open} : {...e}));
+    console.log('sideMenu', sideMenu);
   }
 
   return (
@@ -83,12 +88,15 @@ const SideMenu: React.FC<SideMenuProps> = ({ isMenuOpen, onMenuToggle, isMobile 
         flexShrink: 0,
         [`& .MuiDrawer-paper`]:
         {
+          height: "100%",
           width: isMobile ? '70%' : 'auto',
           boxSizing: 'border-box',
           backgroundColor: 'white',
           marginTop: '80px',
           border: 'none',
-          padding: '2px'
+          padding: '2px',
+          overflow : 'auto',
+          flexDirection : "column"
         }
       }}
       open={isMenuOpen}
@@ -118,8 +126,8 @@ const SideMenu: React.FC<SideMenuProps> = ({ isMenuOpen, onMenuToggle, isMobile 
             }
           >
             {
-              data.map(e => (
-                <div key={e.id}>
+              sideMenu?.map(menu => (
+                <div key={menu.id}>
                 <ListItemButton
                   sx={{
                     borderRadius: '8px',
@@ -127,28 +135,29 @@ const SideMenu: React.FC<SideMenuProps> = ({ isMenuOpen, onMenuToggle, isMobile 
                       color: 'rgb(94, 53, 177)',
                       backgroundColor: 'rgb(237, 231, 246)',
                     },
-                    color: selectedItem === e.id ? 'rgb(94, 53, 177)' : 'inherit',
-                    backgroundColor: selectedItem === e.id ? 'rgba(94, 53, 177, 0.3)' : 'inherit',
+                    color: menu?.url === location  ? 'rgb(94, 53, 177)' : 'inherit',
+                    backgroundColor: menu?.url === location ? 'rgba(94, 53, 177, 0.3)' : 'inherit',
                   }}
 
+                  autoFocus={true}
+
                   onClick={() => {
-                    setSelectedItem(e.id);
-                    handleChangeOpen(e.id);
-                    e.url && navigate(e.url);
+                    handleChangeOpen(menu.id);
+                    menu.url && navigate(menu.url);
                   }}
                 >
                   <ListItemIcon>
-                    {e.icon}
+                    { <LoadIcon menuName={menu.name} /> }
                   </ListItemIcon>
 
-                  <ListItemText primary={e.name} />
-                  {e.children && (e.open ? <ExpandMore /> : <ChevronRight />) }
+                  <ListItemText primary={menu.name} />
+                  {menu.childrens && menu.childrens.length > 0 && (menu.open ? <ExpandMore /> : <ChevronRight />) }
                 </ListItemButton>
 
-                {e.children && e.children.length > 0 && e.children.map(child => (
+                {menu.childrens && menu.childrens.length > 0 && menu.childrens.map(child => (
                   <Collapse 
                     key={child.id}
-                    in={e.open} 
+                    in={menu.open} 
                     timeout={{ enter: 500, exit: 300}} 
                     unmountOnExit 
                     sx={{ height : 'auto' }}
@@ -161,7 +170,6 @@ const SideMenu: React.FC<SideMenuProps> = ({ isMenuOpen, onMenuToggle, isMobile 
                         transition: 'margin-top 2s'
                       }}
                       onClick={() => {
-                        setSelectedItem(e.id);
                         child.url && navigate(child.url)
                       }}
                     >
@@ -174,7 +182,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isMenuOpen, onMenuToggle, isMobile 
                         // disableRipple // 禁用波紋效果 
                       >
                         <ListItemIcon>
-                          {child.icon}
+                          { <LoadIcon menuName={child.name} /> }
                         </ListItemIcon>
                         <ListItemText primary={child.name} />
                       </ListItemButton>

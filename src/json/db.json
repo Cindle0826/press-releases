@@ -1,29 +1,38 @@
 {
-    "posts": [
+    "sideMenus": [
         {
-            "id": "1",
-            "title": "a title",
-            "views": 100
+            "id": 1,
+            "name": "Home",
+            "url": "home",
+            "userPermission": 1
         },
         {
-            "id": "2",
-            "title": "another title",
-            "views": 200
-        }
-    ],
-    "comments": [
-        {
-            "id": "1",
-            "text": "a comment about post 1",
-            "postId": "1"
+            "id": 2,
+            "name": "User Manage"
         },
         {
-            "id": "2",
-            "text": "another comment about post 1",
-            "postId": "1"
+            "id": 3,
+            "name": "User Rights Manage"
         }
     ],
-    "profile": {
-        "name": "typicode"
-    }
+    "childrens": [
+        {
+            "id": "2-1",
+            "name": "User List",
+            "url": "user-manage/list",
+            "sideMenuId" : 2
+        },
+        {
+            "id": "3-1",
+            "name": "Role List",
+            "url": "right-manage/role/list",
+            "sideMenuId" : 3
+        },
+        {
+            "id": "3-2",
+            "name": "Right List",
+            "url": "right-manage/right/list",
+            "sideMenuId" : 3
+        }
+    ]
 }

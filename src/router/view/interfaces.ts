@@ -8,10 +8,10 @@ export interface SideMenuProps extends TopHeaderProps {
 }
 
 export interface Item {
-    id: number;
-    name: string;
-    url?: string;
-    open?: boolean;
-    icon?: JSX.Element;
-    children?: Item[];
+    id: number
+    name: string
+    url?: string
+    open?: boolean
+    userPermission : number
+    childrens?: Item[]
 }
