@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import axios, { AxiosResponse } from 'axios'
-import { Item, SideMenuProps } from '../../router/view/interfaces'
+import React, { useEffect, useMemo } from 'react'
+import { SideMenuProps } from '../../router/view/interfaces'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Drawer from '@mui/material/Drawer'
 import Box from '@mui/material/Box'
@@ -14,6 +13,9 @@ import ChevronRight from '@mui/icons-material/ChevronRight';
 import ExpandMore from '@mui/icons-material/ExpandMore'
 import Paper from '@mui/material/Paper/Paper'
 import LoadIcon from '../../router/util/LoadIcon'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchSideMenu, selectAllSideMenu, setSideMenu, setFirstOpenMenu } from '../../redux/slice/SideMenuSlice'
+import { AppDispatch } from '../../redux/store'
 
 // const items = [
 //   {
@@ -60,24 +62,28 @@ import LoadIcon from '../../router/util/LoadIcon'
 // ]
 
 const SideMenu: React.FC<SideMenuProps> = ({ isMenuOpen, onMenuToggle, isMobile }) => {
-  const [sideMenu, setSideMenu] = useState<Item[]>();
+  const dispatch = useDispatch<AppDispatch>();
+  const sideMenus = useSelector(selectAllSideMenu);
   const navigate = useNavigate();
-  const location = useLocation().pathname.split("/")[2];
-  console.log(useLocation().pathname);
-  console.log(location);
-  
+  const pathname = useLocation().pathname;
+
+  const location = useMemo(() => {
+    console.log('change ...');
+    
+    return pathname.split('/').slice(2).join('/');
+  },  [pathname]);
 
   useEffect(() => {
-    axios.get('http://localhost:8000/sideMenus?_embed=childrens').then((res: AxiosResponse<Item[]>) => {
-      setSideMenu(res.data);
-      console.log(res.data);
-    })
-  }, [])
-
-  const handleChangeOpen = (menuId : number) => {
-    setSideMenu(prevMenu => prevMenu?.map(e => e.id === menuId ? {...e, open : !e.open} : {...e}));
-    console.log('sideMenu', sideMenu);
-  }
+    const fetchData = async () => {
+      await dispatch(fetchSideMenu());
+      dispatch(setFirstOpenMenu({url : location}));
+    };
+    
+    fetchData();
+  
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  
 
   return (
     <Drawer
@@ -126,23 +132,23 @@ const SideMenu: React.FC<SideMenuProps> = ({ isMenuOpen, onMenuToggle, isMobile 
             }
           >
             {
-              sideMenu?.map(menu => (
+              sideMenus.map(menu => (
                 <div key={menu.id}>
                 <ListItemButton
                   sx={{
                     borderRadius: '8px',
                     '&:hover': {
-                      color: 'rgb(94, 53, 177)',
+                      // color: 'rgb(94, 53, 177)',
                       backgroundColor: 'rgb(237, 231, 246)',
                     },
-                    color: menu?.url === location  ? 'rgb(94, 53, 177)' : 'inherit',
+                    color: menu?.url === location ? 'rgb(94, 53, 177)' : 'inherit',
                     backgroundColor: menu?.url === location ? 'rgba(94, 53, 177, 0.3)' : 'inherit',
                   }}
 
-                  autoFocus={true}
+                  // autoFocus={ menu?.url === location }
 
                   onClick={() => {
-                    handleChangeOpen(menu.id);
+                    dispatch(setSideMenu({id : menu.id}));
                     menu.url && navigate(menu.url);
                   }}
                 >
@@ -176,8 +182,15 @@ const SideMenu: React.FC<SideMenuProps> = ({ isMenuOpen, onMenuToggle, isMobile 
                       <ListItemButton 
                         sx={{ 
                           pl: 4,
-                          '&:hover' : {backgroundColor : '#c2cee7'},
-                          borderRadius: '8px'
+                          // '&:hover' : {backgroundColor : '#c2cee7'},
+                          // borderRadius: '8px',
+                          // color: child?.url === location ? 'rgb(94, 53, 177)' : 'inherit',
+                          // backgroundColor: child?.url === location ? '#c2cee7' : 'inherit',
+                          
+                          '&:hover': {backgroundColor: 'rgb(237, 231, 246)'},
+                          borderRadius: '8px',
+                          color: child?.url === location ? 'rgb(94, 53, 177)' : 'inherit',
+                          backgroundColor: child?.url === location ? 'rgba(94, 53, 177, 0.3)' : 'inherit',
                         }} // 設置觸碰時背景為 透明
                         // disableRipple // 禁用波紋效果 
                       >
