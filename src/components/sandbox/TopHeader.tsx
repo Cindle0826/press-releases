@@ -31,10 +31,12 @@ const TopHeader: React.FC<TopHeaderProps> = ({ onMenuToggle, isMobile }) => {
     <>
       <AppBar position="fixed"
         sx={{
-          height: '80px',
+          minHeight: '10%',
+          // minHeight: '100px',
           backgroundColor: 'white',
           // 陰影 
           boxShadow: 'none',
+          // border: '1px solid black'
           // border 底部線條
           // borderBottom: '2px solid #ddd'
         }}
@@ -42,12 +44,18 @@ const TopHeader: React.FC<TopHeaderProps> = ({ onMenuToggle, isMobile }) => {
         {/* justifyContent 控制 導航欄對齊的方式 space-between 左右均勻，對齊中間不留間距*/}
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', color: 'gray' }}>
           {/* 漢堡按鈕 */}
-          {isMobile ? <IconButton><MenuIcon sx={{ fontSize: '2rem' }} /></IconButton> : <h3 >Publishing news website</h3>}
+          {
+            isMobile ?
+              <IconButton onClick={onMenuToggle}>
+                <MenuIcon sx={{ fontSize: '2rem' }} />
+              </IconButton>
+              :
+              <h3 >Publishing news website</h3>
+          }
           <IconButton
             color="inherit"
             aria-label="open drawer"
             edge="start"
-            onClick={onMenuToggle}
             sx={{ marginRight: 2, }}
           >
           </IconButton>
