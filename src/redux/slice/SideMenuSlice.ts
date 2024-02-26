@@ -35,7 +35,7 @@ const sideMenuSlice = createSlice({
         },
         // 初次啟動 sideMenu 組件時判斷當前路由，並對匹配的路由自動開啟 
         setFirstOpenMenu(state, action: PayloadAction<Pick<Item, 'url'>>) {
-            const parentMenu = state.find(menu => menu.childrens?.some(child => child.url === action.payload.url));
+            const parentMenu = state.find(menu => menu.childrens?.some(child => `${menu.url}/${child.url}` === action.payload.url));
             if (parentMenu) {
                 const updatedMenu = state.map(e => e.id === parentMenu.id ? {...e, open : true} : {...e});
                 return updatedMenu;

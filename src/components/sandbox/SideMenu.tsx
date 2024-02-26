@@ -114,14 +114,14 @@ const SideMenu = () => {
                     // color: 'rgb(94, 53, 177)',
                     backgroundColor: 'rgb(237, 231, 246)',
                   },
-                  color: menu?.url === location ? 'rgb(94, 53, 177)' : 'inherit',
-                  backgroundColor: menu?.url === location ? 'rgba(94, 53, 177, 0.3)' : 'inherit',
+                  color: menu.url === location ? 'rgb(94, 53, 177)' : 'inherit',
+                  backgroundColor: menu.url === location ? 'rgba(94, 53, 177, 0.3)' : 'inherit',
                   fontSize: '10px'
                 }}
                 // autoFocus={ menu?.url === location }
                 onClick={() => {
                   dispatch(setSideMenu({ id: menu.id }));
-                  menu.url && navigate(menu.url);
+                  menu.childrens?.length === 0 && navigate(menu.url);
                 }}
               >
                 <ListItemIcon>
@@ -147,9 +147,7 @@ const SideMenu = () => {
                       marginTop: '8px',
                       transition: 'margin-top 2s'
                     }}
-                    onClick={() => {
-                      child.url && navigate(child.url)
-                    }}
+                    onClick={() => navigate(`${menu.url}/${child.url}`)}
                   >
                     <ListItemButton
                       sx={{
@@ -160,8 +158,8 @@ const SideMenu = () => {
                         // backgroundColor: child?.url === location ? '#c2cee7' : 'inherit',
                         '&:hover': { backgroundColor: 'rgb(237, 231, 246)' },
                         borderRadius: '8px',
-                        color: child?.url === location ? 'rgb(94, 53, 177)' : 'inherit',
-                        backgroundColor: child?.url === location ? 'rgba(94, 53, 177, 0.3)' : 'inherit',
+                        color: `${menu.url}/${child.url}` === location ? 'rgb(94, 53, 177)' : 'inherit',
+                        backgroundColor: `${menu.url}/${child.url}` === location ? 'rgba(94, 53, 177, 0.3)' : 'inherit',
                       }} // 設置觸碰時背景為 透明
                     // disableRipple // 禁用波紋效果 
                     >

@@ -25,11 +25,9 @@ export interface SideMenuProps extends TopHeaderProps {
 export interface Item {
     id: number
     name: string
-    url?: string
-    open?: boolean
+    url: string
     page_permission : 1 | 0
+    open?: boolean
     childrens?: Item[]
 }
-
-// 通用 Table 欄位定義
 

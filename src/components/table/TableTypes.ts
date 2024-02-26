@@ -20,7 +20,9 @@ export type TableHeads<T> = {
     columnId: any
     columnType: 'num' | 'str'
     columnName: T
-    disablePadding?: boolean
+    columnLabel: any
+    disablePadding?: boolean,
+    render?: (columnValue: any) => JSX.Element
 }[]
 
 export type TableBodys<T extends string | number | symbol> = {
@@ -36,6 +38,7 @@ export interface SortProps<T extends string | number | symbol> {
 export interface EnhancedTableProps<T extends string | number | symbol> {
     head: TableHeads<T>
     body: TableBodys<T>
+    rowsPerPageData: number[]
     sort?: SortProps<T>
 }
 

@@ -1,9 +1,12 @@
-import React, { useCallback, useEffect, useState } from 'react'
-import { Order, TableBodys, TableHeads } from '../../../../components/table/TableTypes';
-import { Box, Paper } from '@mui/material'
-import { Item } from '../../interfaces';
+import { useEffect, useState } from 'react'
 import axios, { AxiosResponse } from 'axios';
 import EnhancedTable from '../../../../components/table/EnhancedTable';
+import { Order, TableBodys, TableHeads } from '../../../../components/table/TableTypes';
+import { Box, Button, ButtonGroup, Paper } from '@mui/material'
+import { Item } from '../../interfaces';
+import { orange } from '@mui/material/colors';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 // const headCells: HeadCell<Data>[] = [
 //   {
@@ -82,30 +85,43 @@ const tableHead: TableHeads<keyof Item> = [
 
     columnId: 1,
     columnName: 'id',
+    columnLabel: 'id',
     columnType: 'num',
     // disablePadding: true
   },
   {
     columnId: 2,
     columnName: 'name',
+    columnLabel: '權限名稱',
     columnType: 'str'
   },
   {
     columnId: 3,
     columnName: 'url',
-    columnType: 'str'
+    columnLabel: '權限路徑',
+    columnType: 'str',
+    render: columnValue => (
+      <div style={{ backgroundColor: orange[200], padding: '5px' }}>{`/${columnValue}`}</div>
+    )
   },
   {
     columnId: 4,
     columnName: 'page_permission',
-    columnType: 'num'
+    columnLabel: '是否啟用',
+    columnType: 'num',
+    render: columnValue => (
+      <ButtonGroup variant='outlined'>
+        <Button>{<EditIcon />}</Button>
+        <Button>{<DeleteIcon />}</Button>
+      </ButtonGroup>
+    )
   }
 ]
 
 const RightList = () => {
   const [sideMenuData, setSideMenuDate] = useState<TableBodys<keyof Item>>([]);
-  const [orderBy, setOrderBy] = React.useState<Order>('asc');
-  const [sortBy, setSortBy] = React.useState<keyof Item>('id');
+  const [orderBy, setOrderBy] = useState<Order>('asc');
+  const [sortBy, setSortBy] = useState<keyof Item>('id');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -115,34 +131,22 @@ const RightList = () => {
     fetchData();
   }, [])
 
-  const sortData = useCallback(() => {
-    return (property: keyof Item) => sideMenuData.sort((o1, o2) => {
-      const column1 = orderBy !== 'asc' ? o1[property] : o2[property];
-      const column2 = orderBy === 'asc' ? o1[property] : o2[property];
-      return column1 > column2 ? 1 : column1 < column2 ? -1 : 0
-    })
-  }, [sideMenuData, orderBy])
-
   /**
    * 
-   * @param event 傳入的事件
    * @param property 要排序的欄位 
    */
   const handleSortColumn = (property: keyof Item) => {
     const isAsc = sortBy === property && orderBy === 'asc';
     setOrderBy(isAsc ? 'desc' : 'asc');
     setSortBy(property);
-    
-    const sort = sortData();
-    setSideMenuDate(sort(property));
-    console.log('sideMenuData ...', sideMenuData);
-    
+    // console.log('seetOrderBy func ...', orderBy);
   };
+  // console.log('current render ...', renderData, 'page ...', page);
 
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%' }}>
-        <EnhancedTable head={tableHead} body={sideMenuData} sort={{ sortBy, orderBy, sortColumn: handleSortColumn }} />
+        <EnhancedTable head={tableHead} body={sideMenuData} rowsPerPageData={[5, 10, 20]} sort={{ sortBy, orderBy, sortColumn: handleSortColumn }} />
       </Paper>
     </Box>
   )
