@@ -3,15 +3,15 @@ import IndexRoutes from "./router/IndexRoutes";
 import { Provider } from "react-redux";
 import { store } from './redux/store'
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { blue, pink } from "@mui/material/colors";
+import { purple, teal } from "@mui/material/colors";
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: blue[300],
+      main: purple[200],
     },
     secondary: {
-      main: pink[200]
+      main: teal[200]
     }
   },
 });

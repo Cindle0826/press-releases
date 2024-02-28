@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import axios, { AxiosResponse } from 'axios';
 import EnhancedTable from '../../../../components/table/EnhancedTable';
-import { Order, TableBodys, TableHeads } from '../../../../components/table/TableTypes';
+import { EnhancedChildren, Order, TableBodys, TableHeads } from '../../../../components/table/TableTypes';
 import { Box, Button, ButtonGroup, Paper } from '@mui/material'
-import { Item } from '../../interfaces';
-import { orange } from '@mui/material/colors';
+import { Item, ItemChildren } from '../../interfaces';
+import { orange, pink } from '@mui/material/colors';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
@@ -108,7 +108,7 @@ const tableHead: TableHeads<keyof Item> = [
     columnId: 4,
     columnName: 'page_permission',
     columnLabel: '是否啟用',
-    columnType: 'num',
+    columnType: 'any',
     render: columnValue => (
       <ButtonGroup variant='outlined'>
         <Button>{<EditIcon />}</Button>
@@ -117,6 +117,52 @@ const tableHead: TableHeads<keyof Item> = [
     )
   }
 ]
+
+const tableChildren: EnhancedChildren<keyof ItemChildren> = {
+  childrenHeads: [
+    {
+
+      columnId: 1,
+      columnName: 'id',
+      columnLabel: 'id',
+      columnType: 'num',
+      // disablePadding: true
+    },
+    {
+      columnId: 2,
+      columnName: 'name',
+      columnLabel: '權限名稱',
+      columnType: 'str'
+    },
+    {
+      columnId: 3,
+      columnName: 'url',
+      columnLabel: '權限路徑',
+      columnType: 'str',
+      render: columnValue => (
+        <div style={{ backgroundColor: pink[100], padding: '5px' }}>{`/${columnValue}`}</div>
+      )
+    },
+    {
+      columnId: 4,
+      columnName: 'sideMenuId',
+      columnLabel: 'sideMenuId',
+      columnType: 'num'
+    },
+    {
+      columnId: 5,
+      columnName: 'page_permission',
+      columnLabel: '是否啟用',
+      columnType: 'any',
+      render: columnValue => (
+        <ButtonGroup variant='outlined'>
+          <Button>{<EditIcon />}</Button>
+          <Button>{<DeleteIcon />}</Button>
+        </ButtonGroup>
+      )
+    }
+  ]
+}
 
 const RightList = () => {
   const [sideMenuData, setSideMenuDate] = useState<TableBodys<keyof Item>>([]);
@@ -146,7 +192,13 @@ const RightList = () => {
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%' }}>
-        <EnhancedTable head={tableHead} body={sideMenuData} rowsPerPageData={[5, 10, 20]} sort={{ sortBy, orderBy, sortColumn: handleSortColumn }} />
+        <EnhancedTable
+          head={tableHead}
+          body={sideMenuData}
+          rowsPerPageData={[5, 10, 20]}
+          sort={{ sortBy, orderBy, sortColumn: handleSortColumn }}
+          childrenOptions={tableChildren}
+        />
       </Paper>
     </Box>
   )

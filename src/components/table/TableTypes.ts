@@ -16,29 +16,62 @@ export interface HeadCell<T> {
     numeric: boolean
 }
 
+type TableUnionType = string | number;
+
 export type TableHeads<T> = {
     columnId: any
-    columnType: 'num' | 'str'
+    columnType: 'num' | 'str' | 'any'
     columnName: T
     columnLabel: any
     disablePadding?: boolean,
     render?: (columnValue: any) => JSX.Element
 }[]
 
-export type TableBodys<T extends string | number | symbol> = {
+export type TableBodys<T extends TableUnionType> = ({
     [P in T]: any
-}[]
+} & { children?: TableBodys<TableUnionType> })[]
 
-export interface SortProps<T extends string | number | symbol> {
+export interface SortProps<T extends TableUnionType> {
     sortColumn: (property: T) => void
     sortBy: T
     orderBy: 'asc' | 'desc'
 }
 
-export interface EnhancedTableProps<T extends string | number | symbol> {
+export interface EnhancedChildren<T extends TableUnionType> {
+    childrenHeads: TableHeads<T>
+    // childrenBodys: TableHeads<T>
+}
+
+/**
+ * @param head 表頭
+ * @param body 表身
+ * @param rowsPerPageData 跳頁每一頁顯示多少筆 ex: [5, 10, 20]
+ * @param sort 是否排序
+ */
+export interface EnhancedTableProps<T extends TableUnionType> {
     head: TableHeads<T>
     body: TableBodys<T>
     rowsPerPageData: number[]
     sort?: SortProps<T>
+    childrenOptions?: EnhancedChildren<TableUnionType>
+    // children?: TableBodys<T>
+    // childrenOptions?: {
+    //     childrenHead: TableHeads<TableUnionType>
+    //     childrenBody: TableBodys<TableUnionType>
+    // }
 }
 
+/**
+ * @param head 要讓 body 所渲染的 欄位值
+ * @param body 傳入的 row
+ * @param children 要傳入的子欄位
+ * @param children.childrenHeads 子欄位的 head
+ */
+export interface EnhancedRows<C extends TableUnionType> {
+    head: TableHeads<C>
+    body: TableBodys<C>[number]
+    children: {
+        // childrenName: string | number
+        childrenHeads: TableHeads<TableUnionType>
+    }
+}

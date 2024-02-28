@@ -121,7 +121,7 @@ const SideMenu = () => {
                 // autoFocus={ menu?.url === location }
                 onClick={() => {
                   dispatch(setSideMenu({ id: menu.id }));
-                  menu.childrens?.length === 0 && navigate(menu.url);
+                  menu.children?.length === 0 && navigate(menu.url);
                 }}
               >
                 <ListItemIcon>
@@ -129,10 +129,10 @@ const SideMenu = () => {
                 </ListItemIcon>
 
                 <ListItemText primary={menu.name} />
-                {menu.childrens && menu.childrens.length > 0 && (menu.open ? <ExpandMore /> : <ChevronRight />)}
+                {menu.children && menu.children.length > 0 && (menu.open ? <ExpandMore /> : <ChevronRight />)}
               </ListItemButton>
 
-              {menu.childrens && menu.childrens.length > 0 && menu.childrens.map(child => (
+              {menu.children && menu.children.length > 0 && menu.children.map(child => (
                 <Collapse
                   key={child.id}
                   in={menu.open}

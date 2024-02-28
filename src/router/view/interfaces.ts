@@ -13,6 +13,14 @@ export interface SideMenuProps extends TopHeaderProps {
     isMenuOpen: boolean
 }
 
+export type ItemChildren = {
+    id: number
+    name: string
+    url: string,
+    page_permission: 1 | 0,
+    sideMenuId: number
+}
+
 /**
  * 導航欄資料型別
  * @param id - Item id
@@ -26,8 +34,8 @@ export interface Item {
     id: number
     name: string
     url: string
-    page_permission : 1 | 0
+    page_permission: 1 | 0
     open?: boolean
-    childrens?: Item[]
+    children?: ItemChildren[]
 }
 

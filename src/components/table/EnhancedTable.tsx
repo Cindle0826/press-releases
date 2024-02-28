@@ -2,8 +2,9 @@ import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TablePagin
 import { visuallyHidden } from '@mui/utils';
 import { EnhancedTableProps } from './TableTypes'
 import { useMemo, useState } from 'react';
+import EnhancedRow from './EnhancedRow';
 
-const EnhancedTable = <T extends string>({ head, body, rowsPerPageData, sort }: EnhancedTableProps<T>) => {
+const EnhancedTable = <T extends string>({ head, body, rowsPerPageData, sort, childrenOptions }: EnhancedTableProps<T>) => {
     const [rowsPerPage, setRowsPerPage] = useState<number>(rowsPerPageData[0]);
     const [page, setPage] = useState<number>(0);
     const [value, setValue] = useState<number | ''>(page + 1);
@@ -39,6 +40,7 @@ const EnhancedTable = <T extends string>({ head, body, rowsPerPageData, sort }: 
     // 更新當前頁面 page
     const handleOnPageChange = (event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, page: number) => {
         setPage(page)
+        setValue(page + 1)
     }
 
     // 透過輸入更新當前頁面
@@ -72,7 +74,7 @@ const EnhancedTable = <T extends string>({ head, body, rowsPerPageData, sort }: 
                     aria-labelledby="tableTitle"
                     size={'medium'}
                 >
-                    <TableHead sx={{ backgroundColor: theme.palette.secondary.main }}>
+                    <TableHead sx={{ backgroundColor: theme.palette.primary.main }}>
                         <TableRow>
                             {/* <TableCell padding="checkbox">
                         <Checkbox
@@ -85,13 +87,14 @@ const EnhancedTable = <T extends string>({ head, body, rowsPerPageData, sort }: 
                         }}
                         />
                     </TableCell> */}
+                    {body.some(b => b.children) && <TableCell />}
                             {head.map(h => (
                                 <TableCell
                                     key={h.columnId}
-                                    // align={h.columnType === 'num' ? 'right' : 'left'}
-                                    padding={h.disablePadding ? 'none' : 'normal'}
-                                    // sortDirection={orderBy === headCell.id ? order : false}
-                                    sx={{ color: 'black' }}
+                                    // padding={h.disablePadding ? 'none' : 'normal'}
+                                    // sortDirection={sort?.sortBy === h.columnName ? sort.orderBy : false}
+                                    sx={{ color: 'black', fontSize: '14px' }}
+                                    align={h.columnType === 'num' ? 'right' : (h.columnType === 'str' ? 'left' : 'center')}
                                 >
                                     {sort &&
                                         <TableSortLabel
@@ -99,34 +102,49 @@ const EnhancedTable = <T extends string>({ head, body, rowsPerPageData, sort }: 
                                             direction={sort.sortBy === h.columnName ? sort.orderBy : 'asc'}
                                             onClick={e => sort?.sortColumn(h.columnName)}
                                         >
+                                            {h.columnLabel}
                                             {sort.sortBy === h.columnName ? (
                                                 <Box component="span" sx={visuallyHidden}>
                                                     {sort.orderBy === 'desc' ? 'sorted descending' : 'sorted ascending'}
                                                 </Box>
                                             ) : null}
                                         </TableSortLabel>}
-                                    {h.columnLabel}
+                                    
                                 </TableCell>
                             ))}
                         </TableRow>
                     </TableHead>
                     <TableBody >
                         {
-                            renderData.map((b, index) => (
-                                <TableRow key={index} >
-                                    {
-                                        head.map(h => (
-                                            <TableCell
-                                                key={`${index}-${h.columnId}`}
-                                                sx={{ flex: 1 }}
-                                            // align={h.columnType === 'num' ? 'right' : 'left'}
-                                            >
-                                                {h.render ? h.render(b[h.columnName]) : b[h.columnName]}
-                                            </TableCell>
-                                        ))
-                                    }
-                                </TableRow>
-                            ))
+                            // children ? renderData.map((b, index) => (
+                            //     <EnhancedRow key={index} head={head} body={b} children={{childrenHeads: children.childrenHeads}}/>
+                            // ))
+                            // :
+                            // }
+                            // {
+                            renderData.map((b, index) => {
+                                return (
+                                    childrenOptions ?
+                                    <EnhancedRow key={index} head={head} body={b} children={{ childrenHeads: childrenOptions.childrenHeads }} />
+                                    :
+                                    b.children ?
+                                        <EnhancedRow key={index} head={head} body={b} children={{ childrenHeads: head }} />
+                                        :
+                                    <TableRow key={index}>
+                                        {
+                                            head.map(h => (
+                                                <TableCell
+                                                    key={`${index}-${h.columnId}`}
+                                                    sx={{ flex: 1 }}
+                                                    align={h.columnType === 'num' ? 'right' : (h.columnType === 'str' ? 'left' : 'center')}
+                                                >
+                                                    {h.render ? h.render(b[h.columnName]) : b[h.columnName]}
+                                                </TableCell>
+                                            ))
+                                        }
+                                    </TableRow>
+                                )
+                            })
                         }
                     </TableBody>
                 </Table>
